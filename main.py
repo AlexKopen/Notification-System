@@ -1,1 +1,0 @@
-print 'IDE setup test 2'
