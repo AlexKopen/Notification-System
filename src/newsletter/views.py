@@ -1,5 +1,10 @@
 from django.shortcuts import render
 
+
 # Create your views here.
 def home(request):
-    return render(request,"home.html",{})
+    title = "title for the page for user %s" %(request.user)
+    context = {
+        "title": title,
+    }
+    return render(request, "home.html", context)
