@@ -2,6 +2,12 @@ from django import forms
 from .models import SignUp
 
 
+class ContactForm(forms.Form):
+    dat_name = forms.CharField(required=False)
+    dat_name.widget.attrs['class'] = 'passedclass'
+    dat_email_doh = forms.EmailField()
+
+
 class SignUpForm(forms.ModelForm):
     class Meta:
         model = SignUp
