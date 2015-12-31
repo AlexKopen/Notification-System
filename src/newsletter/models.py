@@ -12,3 +12,13 @@ class SignUp(models.Model):
 
     def __unicode__(self):
         return self.email
+
+
+class ApiUser(models.Model):
+    username = models.CharField(max_length=100, unique=True, default='alex')
+    access_token = models.CharField(max_length=100)
+    refresh_token = models.CharField(max_length=100)
+    expires_timestamp = models.DateTimeField()
+
+    def __unicode__(self):
+        return self.access_token

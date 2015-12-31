@@ -15,9 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^$', 'newsletter.views.home', name='home'),
     url(r'^contact/$', 'newsletter.views.contact', name='contact'),
+    url(r'^api/$', 'newsletter.views.api', name='api'),
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^login/$', RedirectView.as_view(
+        url='https://drchrono.com/o/authorize/?redirect_uri=http://localhost:8000/api/&response_type=code&client_id=kS9O05JP4l7pSMC7BObcU2bLOX2iS5QVSP2AyqKa')),
 ]

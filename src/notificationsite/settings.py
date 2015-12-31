@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'newsletter',
+    'oauth2_provider',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -49,7 +50,11 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 )
+
+# Temporary
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'notificationsite.urls'
 
