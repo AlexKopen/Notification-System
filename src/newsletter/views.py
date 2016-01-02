@@ -3,6 +3,7 @@ import datetime
 import pytz
 import requests
 from .models import ApiUser
+from .models import BirthDayEmails
 from django.utils import timezone
 from operator import itemgetter
 from django.views.generic import RedirectView
@@ -107,6 +108,8 @@ def api(request):
     patient_tuples_list = []
     patients_with_birthdays = []
 
+    today_emails, created = BirthDayEmails.objects.get_or_create(date=datetime.date.today())
+
     for current_patient in patients:
         # Only add patients who have both an email and a birth date
         if current_patient['email'] and current_patient['date_of_birth']:
@@ -121,12 +124,16 @@ def api(request):
                 patients_with_birthdays.append(
                     (current_patient['first_name'], current_patient['last_name'], current_patient['email']))
 
-                email_message = "Dr. Kopen wishes you, %s %s, a happy birthday!  Also, Django is pretty cool." % (
-                    current_patient['first_name'],
-                    current_patient['last_name'])
+                if not today_emails.birth_days_emailed:
+                    email_message = "Dr. Kopen wishes you, %s %s, a happy birthday!  Also, Django is pretty cool." % (
+                        current_patient['first_name'],
+                        current_patient['last_name'])
 
-                send_mail('Happy Birthday!', email_message, 'api@alexkopen.com', [current_patient['email']],
-                          fail_silently=False)
+                    send_mail('Happy Birthday!', email_message, 'api@alexkopen.com', [current_patient['email']],
+                              fail_silently=False)
+
+    today_emails.birth_days_emailed = True
+    today_emails.save()
 
     # Sort by DOB, which is at index 3 of each tuple
     patient_tuples_list = sorted(patient_tuples_list, key=itemgetter(3))

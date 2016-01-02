@@ -9,4 +9,12 @@ class ApiUser(models.Model):
     expires_timestamp = models.DateTimeField(null=True)
 
     def __unicode__(self):
-        return self.access_token
+        return self.username
+
+
+class BirthDayEmails(models.Model):
+    date = models.DateField(unique=True)
+    birth_days_emailed = models.BooleanField(default=False)
+
+    def __unicode__(self):
+        return self.date
