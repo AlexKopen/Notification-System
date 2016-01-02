@@ -6,6 +6,7 @@ from .models import ApiUser
 from django.utils import timezone
 from operator import itemgetter
 from django.views.generic import RedirectView
+from django.core.mail import send_mail
 
 
 # Functions
@@ -117,12 +118,18 @@ def api(request):
             # Check to see if it is the patients birth day
             # Cast to int to account for 01 != 1 and other applicable conflicts
             if int(month) == int(datetime.date.today().month) and int(day) == int(datetime.date.today().day):
-                patients_with_birthdays.append((current_patient['first_name'], current_patient['last_name']))
+                patients_with_birthdays.append(
+                    (current_patient['first_name'], current_patient['last_name'], current_patient['email']))
+
+                email_message = "Dr. Kopen wishes you, %s %s, a happy birthday!  Also, Django is pretty cool." % (
+                    current_patient['first_name'],
+                    current_patient['last_name'])
+
+                send_mail('Happy Birthday!', email_message, 'api@alexkopen.com', [current_patient['email']],
+                          fail_silently=False)
 
     # Sort by DOB, which is at index 3 of each tuple
     patient_tuples_list = sorted(patient_tuples_list, key=itemgetter(3))
-
-    # TODO: Email patients who have birthdays
 
     context = {
         'title': 'API Home',
