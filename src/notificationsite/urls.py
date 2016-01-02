@@ -19,7 +19,6 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^$', 'newsletter.views.home', name='home'),
-    url(r'^contact/$', 'newsletter.views.contact', name='contact'),
     url(r'^api/$', 'newsletter.views.api', name='api'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', RedirectView.as_view(

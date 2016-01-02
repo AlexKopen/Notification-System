@@ -1,24 +1,12 @@
 from __future__ import unicode_literals
 from django.db import models
-# Create your models here.
-from django.utils.datetime_safe import datetime
-
-
-class SignUp(models.Model):
-    email = models.EmailField()
-    full_name = models.CharField(max_length=100, blank=True, null=True)
-    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
-    updated = models.DateTimeField(default=datetime.now, blank=True)
-
-    def __unicode__(self):
-        return self.email
 
 
 class ApiUser(models.Model):
-    username = models.CharField(max_length=100, unique=True, default='alex')
+    username = models.CharField(max_length=100, unique=True)
     access_token = models.CharField(max_length=100)
     refresh_token = models.CharField(max_length=100)
-    expires_timestamp = models.DateTimeField()
+    expires_timestamp = models.DateTimeField(null=True)
 
     def __unicode__(self):
         return self.access_token
