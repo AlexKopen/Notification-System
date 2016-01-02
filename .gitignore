@@ -3,4 +3,4 @@ Include/
 Lib/
 Scripts/
 pip-selfcheck.json
-src\notificationsite\email_settings.py
+src/notificationsite/email_settings.py
