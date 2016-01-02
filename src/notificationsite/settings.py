@@ -1,5 +1,5 @@
 import os
-from .email_settings import *
+from .email_login_settings import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -9,7 +9,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-# These variables are declared in email_settings.py which is not included in this repository for security reasons
+# These variables are declared in email_login_settings.py which is not included in this repository for security reasons
 # EMAIL_HOST =
 # EMAIL_HOST_USER =
 # EMAIL_HOST_PASSWORD =
