@@ -1,9 +1,17 @@
 {% include "header.html" %}
 
-<h1>User Info:</h1>
-<p>{{userinfo}}</p>
+<h1>Patients:</h1>
 
-<h1>Patients Info:</h1>
-<p>{{patientsinfo}}</p>
+{% for current_patient in patient_tuple %}
+<p>Name: {{current_patient.0}} {{current_patient.1}}</p>
+<p>Email: {{current_patient.2}}</p>
+<p>Date of Birth:{{current_patient.3}}</p>
+{% endfor %}
+
+<h1>Birthdays:</h1>
+
+{% for current_patient in birthday_tuple %}
+<p>Name: {{current_patient.0}} {{current_patient.1}}</p>
+{% endfor %}
 
 {% include "footer.html" %}

@@ -1,8 +1,11 @@
 from django.shortcuts import render
-import datetime, pytz, requests
-import json
+import datetime
+import pytz
+import requests
 from .models import ApiUser
 from django.utils import timezone
+from operator import itemgetter
+from django.views.generic import RedirectView
 
 
 # Functions
@@ -40,12 +43,25 @@ def create_user(code, request):
     return user
 
 
+def update_user(user):
+    authorization_response = requests.post('https://drchrono.com/o/token/', data={
+        'refresh_token': user.refresh_token,
+        'grant_type': 'refresh_token',
+        'client_id': 'kS9O05JP4l7pSMC7BObcU2bLOX2iS5QVSP2AyqKa',
+        'client_secret': '8DWCWZP2YuOXONuIkTetaNHjF2nfyLmDCrbJFomGKrMJyyjJiGSdDS0rANiukFZ5Y4HSricrKLOEqEZFFMP017u6bbxVE06BE8X5EEN0Y0XKMP9ggp7ZHaCwrrD9Ecv5',
+    })
+
+    authorization_response.raise_for_status()
+    api_authorization_data = authorization_response.json()
+
+    user.access_token = api_authorization_data['access_token']
+    user.save()
+
+
 # Views
 def home(request):
-    title = 'Home Page'
-
     context = {
-        'title': title,
+        'title': 'Home Page',
     }
 
     return render(request, "home.html", context)
@@ -55,7 +71,9 @@ def api(request):
     # Create a new user object if there is no session username or the user is not logged in
     if not request.session.get('username', '') or not request.session.get('logged_in', False):
         if not request.GET.get('code'):
-            return render(request, '/login')
+            return RedirectView.as_view(
+                url='https://drchrono.com/o/authorize/?redirect_uri=http://localhost:8000/api/&response_type=code&client_id=kS9O05JP4l7pSMC7BObcU2bLOX2iS5QVSP2AyqKa')(
+                request)
         user = create_user(request.GET.get('code'), request)
     else:
         # Check to see if a user with the session username exists
@@ -63,14 +81,13 @@ def api(request):
             user = ApiUser.objects.get(username=request.session['username'])
             # Timestamp has expired
             if user.expires_timestamp < timezone.now():
-                if not request.GET.get('code'):
-                    return render(request, '/login')
-                    # Update the user object info
-                user = create_user(request.GET.get('code'), request)
+                # Update the user access token
+                update_user(user)
         except ApiUser.DoesNotExist:
             if not request.GET.get('code'):
-                return render(request, '/login')
-            # Create a new user
+                return RedirectView.as_view(
+                    url='https://drchrono.com/o/authorize/?redirect_uri=http://localhost:8000/api/&response_type=code&client_id=kS9O05JP4l7pSMC7BObcU2bLOX2iS5QVSP2AyqKa')(
+                    request)
             user = create_user(request.GET.get('code'), request)
 
     # Patients Info
@@ -83,17 +100,34 @@ def api(request):
     while patients_url:
         data = requests.get(patients_url, headers=headers).json()
         patients.extend(data['results'])
-        patients_url = data['next']  # A JSON null on the last page
+        patients_url = data['next']
 
-    # json_string = u'{ "id":"123456789", ... }'
-    # obj = json.loads(json_string)    # obj now contains a dict of the data
-    #
-    # converted  = json.loads(u' + patients[0])
-    # #print converted[0]
+    # Create a list of tuples including names, emails, and birth dates
+    patient_tuples_list = []
+    patients_with_birthdays = []
+
+    for current_patient in patients:
+        # Only add patients who have both an email and a birth date
+        if current_patient['email'] and current_patient['date_of_birth']:
+            patient_tuples_list.append((current_patient['first_name'], current_patient['last_name'],
+                                        current_patient['email'], current_patient['date_of_birth']))
+            # Get birth date month and day
+            month = current_patient['date_of_birth'][5:7]
+            day = current_patient['date_of_birth'][8:]
+            # Check to see if it is the patients birth day
+            # Cast to int to account for 01 != 1 and other applicable conflicts
+            if int(month) == int(datetime.date.today().month) and int(day) == int(datetime.date.today().day):
+                patients_with_birthdays.append((current_patient['first_name'], current_patient['last_name']))
+
+    # Sort by DOB, which is at index 3 of each tuple
+    patient_tuples_list = sorted(patient_tuples_list, key=itemgetter(3))
+
+    # TODO: Email patients who have birthdays
 
     context = {
         'title': 'API Home',
-        'patientsinfo': patients[0],
+        'patient_tuple': patient_tuples_list,
+        'birthday_tuple': patients_with_birthdays,
     }
 
     return render(request, "api.html", context)
