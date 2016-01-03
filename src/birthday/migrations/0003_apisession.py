@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0002_signup_updated'),
+        ('birthday', '0002_signup_updated'),
     ]
 
     operations = [

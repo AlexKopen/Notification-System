@@ -9,7 +9,7 @@ import django.utils.datetime_safe
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0001_initial'),
+        ('birthday', '0001_initial'),
     ]
 
     operations = [

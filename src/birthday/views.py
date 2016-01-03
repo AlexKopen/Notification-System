@@ -56,7 +56,11 @@ def update_user(user):
     authorization_response.raise_for_status()
     api_authorization_data = authorization_response.json()
 
+    # Update the user object
     user.access_token = api_authorization_data['access_token']
+    user.refresh_token = api_authorization_data['refresh_token']
+    user.expires_timestamp = datetime.datetime.now(pytz.utc) + datetime.timedelta(
+        seconds=api_authorization_data['expires_in'])
     user.save()
 
 
@@ -92,7 +96,7 @@ def api(request):
                     request)
             user = create_user(request.GET.get('code'), request)
 
-    # Patients Info
+    # Access all patient info
     headers = {
         'Authorization': 'Bearer ' + user.access_token,
     }
@@ -108,6 +112,7 @@ def api(request):
     patient_tuples_list = []
     patients_with_birthdays = []
 
+    # Create a database object to see if any emails have been sent
     today_emails, created = BirthDayEmails.objects.get_or_create(date=datetime.date.today())
 
     for current_patient in patients:
@@ -124,6 +129,7 @@ def api(request):
                 patients_with_birthdays.append(
                     (current_patient['first_name'], current_patient['last_name'], current_patient['email']))
 
+                # Email patients a birthday message
                 if not today_emails.birth_days_emailed:
                     email_message = "Dr. Kopen wishes you, %s %s, a happy birthday!  Also, Django is pretty cool." % (
                         current_patient['first_name'],
@@ -132,6 +138,7 @@ def api(request):
                     send_mail('Happy Birthday!', email_message, 'api@alexkopen.com', [current_patient['email']],
                               fail_silently=False)
 
+    # All patients with birthdays have been emailed.  Do not send another on any additional page requests.
     today_emails.birth_days_emailed = True
     today_emails.save()
 

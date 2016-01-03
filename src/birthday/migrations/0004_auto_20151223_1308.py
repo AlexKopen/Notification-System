@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0003_apisession'),
+        ('birthday', '0003_apisession'),
     ]
 
     operations = [
