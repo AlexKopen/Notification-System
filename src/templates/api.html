@@ -1,9 +1,15 @@
 {% include "header.html" %}
 
 <div class="container">
+
     <div class="pure-g">
-        <div class="pure-u-1-2">
+        <div class="pure-u-1-1">
             <h1>Patients:</h1>
+
+            <p>
+                Below is a list of patients who have both an email address and date of birth associated with their
+                profile.
+            </p>
             <table class="pure-table">
                 <thead>
                 <tr>
@@ -30,13 +36,21 @@
                 </tbody>
             </table>
         </div>
-        <div class="pure-u-1-2">
-            <h1>Today's Birthdays:</h1>
+    </div>
+
+    <div class="pure-g">
+        <div class="pure-u-1-1">
+            <h1>Birthdays:</h1>
+            <p>
+                Below is a list of patients who have a birthday today and have been emailed.
+            </p>
             <table class="pure-table">
                 <thead>
                 <tr>
                     <th>#</th>
                     <th>Name</th>
+                    <th>Email</th>
+                    <th>Date of Birth</th>
                 </tr>
                 </thead>
 
@@ -49,13 +63,14 @@
                     {% endif %}
                     <td>{{forloop.counter}}</td>
                     <td>{{current_patient.0}} {{current_patient.1}}</td>
+                    <td>{{current_patient.2}}</td>
+                    <td>{{current_patient.3}}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
-</div>
 
 
-{% include "footer.html" %}
+    {% include "footer.html" %}

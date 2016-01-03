@@ -68,9 +68,18 @@ def update_user(user):
 def home(request):
     context = {
         'title': 'Home Page',
+        'username': request.session['username'],
     }
 
     return render(request, "home.html", context)
+
+
+def logout(request):
+    # Clear session variables
+    request.session['username'] = ''
+    request.session['logged_in'] = False
+
+    return RedirectView.as_view(url='/')(request)
 
 
 def api(request):
@@ -127,7 +136,8 @@ def api(request):
             # Cast to int to account for 01 != 1 and other applicable conflicts
             if int(month) == int(datetime.date.today().month) and int(day) == int(datetime.date.today().day):
                 patients_with_birthdays.append(
-                    (current_patient['first_name'], current_patient['last_name'], current_patient['email']))
+                    (current_patient['first_name'], current_patient['last_name'], current_patient['email'],
+                     current_patient['date_of_birth']))
 
                 # Email patients a birthday message
                 if not today_emails.birth_days_emailed:

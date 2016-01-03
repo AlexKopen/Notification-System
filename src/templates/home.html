@@ -1,5 +1,35 @@
 {% include "header.html" %}
 
-<p><a href="./api">API Access</a></p>
+<div class="container" id = "home">
+
+    <div class="pure-g">
+        <div class="pure-u-1-1">
+            <h1>Welcome to the Birthday Notification System</h1>
+        </div>
+    </div>
+
+    {% load staticfiles %}
+    <div class="pure-g">
+        <div class="pure-u-1-2">
+            <a href="/api">
+                <img src="{% static "images/profile.png" %}" alt="API Access">
+                <p>Access Patient Information</p>
+            </a>
+        </div>
+        <div class="pure-u-1-2">
+             <a href="/logout">
+                <img src="{% static "images/logout.png" %}" alt="Logout">
+                 <p>Deactivate Session</p>
+                 {% if username %}
+                 <p>You are currently logged in as drchrono user {{username}}</p>
+                 {% else %}
+                 <p>You are not currently logged in</p>
+                 {% endif %}
+             </a>
+        </div>
+    </div>
+
+</div>
+
 
 {% include "footer.html" %}
